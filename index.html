@@ -1,57 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SortPuz: Water Color Sort Puzzle Game</title>
-  <style>
-    * {
-      padding: 0;
-      margin: 0;
-    }
-    #app {
-      padding: 10px;
-    }
-    .tube-wrap {
-      display: flex;
-      padding-top: 20px;
-    }
-    .tube {
-      width: 20px;
-      margin-right: 15px;
-      height: fit-content;
-    }
-    .tube-active {
-      transform: translateY(-10px);
-    }
-    .tube__layer {
-      border: 1px solid black;
-      width: 100%;
-      height: 25px;
-    }
-  </style>
-  <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
-</head>
-<body>
-  <!-- <label>管子数量<input v-model="nTubes"></label> -->
-  <div id="app">
-    <div class="tube-wrap">
-      <div v-for="(arr, idx) in arrLists" >
-        <div class="tube" :class="idx===activeTube ? 'tube-active' : ''" @click="handleClickTube(idx)">
-          <div class="tube__layer" v-for="color in arr" :style="`background: ${color}`"></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SortPuz: Water Color Sort Puzzle Game</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+      }
+      #app {
+        padding: 10px;
+      }
+      .tube-wrap {
+        display: flex;
+        padding-top: 20px;
+      }
+      .tube {
+        width: 20px;
+        margin-right: 15px;
+        height: fit-content;
+      }
+      .tube-active {
+        transform: translateY(-10px);
+      }
+      .tube__layer {
+        border: 1px solid black;
+        width: 100%;
+        height: 25px;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
+  </head>
+  <body>
+    <!-- <label>管子数量<input v-model="nTubes"></label> -->
+    <div id="app">
+      <div>
+        第{{ currConfigIdx + 1 }}关
+        <button @click="handleClickResetBtn">reset</button>
+      </div>
+      <div class="tube-wrap">
+        <div v-for="(arr, idx) in state">
+          <div
+            class="tube"
+            :class="idx===activeTube ? 'tube-active' : ''"
+            @click="handleClickTube(idx)"
+          >
+            <div
+              class="tube__layer"
+              v-for="color in arr"
+              :style="`background: ${color}`"
+            ></div>
+          </div>
+          <div>{{idx}}</div>
         </div>
-        <div>{{idx}}</div>
+      </div>
+      <button @click="handleClickUndoBtn">撤销</button>
+      <button @click="handleClickRedoBtn">重做</button>
+      <button @click="handleClickSolveBtn">解答</button>
+      <button @click="handleClickLastBtn">上一关</button>
+      <button @click="handleClickNextBtn">下一关</button>
+      <div>
+        <div>历史步骤：</div>
+        <div style="white-space: pre">
+          {{ history.map(x=>`move ${x.color} x ${x.count} from ${x.from} to ${x.to}`).join('\n') }}
+        </div>
       </div>
     </div>
-    <button @click="handleClickUndoBtn">撤销</button>
-    <button @click="handleClickSolveBtn">解答</button>
-    <div>
-      <div>历史步骤：</div>
-      <div style="white-space: pre;">{{ history.join('\n') }}</div>
-    </div>
-  </div>
-  <script src="waterTube.js"></script>
-  <script src="main.js"></script>
-</body>
+    <script src="configs.js"></script>
+    <script src="waterTube.js"></script>
+    <script src="main.js"></script>
+  </body>
 </html>

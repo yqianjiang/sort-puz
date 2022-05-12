@@ -4,18 +4,18 @@ createApp({
   setup() {
     const activeTube = ref(null);
     const nTubes = ref(2);
-    const config = [
-      [2, 8, 6, 4],
-      [0, 2, 2, 4],
-      [1, 3, 6, 1],
-      [6, 0, 4, 4],
-      [6, 2, 8, 3],
-      [0, 8, 1, 1],
-      [8, 3, 0, 3],
-    ];
-    const waterTubes = new WaterTubes(config, nTubes.value);
-    const arrLists = ref(waterTubes.data);
-    const history = ref(waterTubes.history);
+    const currConfigIdx = ref(0);
+    let waterTubes;
+    const state = ref([]);
+    const history = ref([]);
+
+    const reset = () => {
+      waterTubes = new WaterTubes(configs[currConfigIdx.value], nTubes.value);
+      state.value = waterTubes.data;
+      history.value = waterTubes.history;
+    }
+
+    reset();
 
     const handleClickTube = (idx) => {
       if (activeTube.value === idx) {
@@ -31,24 +31,61 @@ createApp({
       }
     };
 
-    const handleClickUndoBtn = () => {
-      waterTubes.undo();
+    const updateView = () => {
       activeTube.value = 0;
       activeTube.value = null;
     }
 
+    const handleClickResetBtn = () => {
+      reset();
+    }
+
+    const handleClickUndoBtn = () => {
+      waterTubes.undo();
+      updateView();
+    }
+
+    const handleClickRedoBtn = () => {
+      waterTubes.redo();
+      updateView();
+    }
+    
     const handleClickSolveBtn = () => {
       waterTubes.solve();
+      updateView();
+    }
+
+    const handleClickLastBtn = () => {
+      if (currConfigIdx.value - 1 > 0) {
+        currConfigIdx.value -= 1;
+      } else {
+        console.log('没有上一关了');
+      }
+      reset();
+    }
+
+    const handleClickNextBtn = () => {
+      if (currConfigIdx.value + 1 < configs.length) {
+        currConfigIdx.value += 1;
+      } else {
+        console.log('没有下一关了');
+      }
+      reset();
     }
 
     return {
       nTubes,
-      arrLists,
+      state,
       activeTube,
       history,
+      currConfigIdx,
       handleClickTube,
+      handleClickResetBtn,
       handleClickUndoBtn,
+      handleClickRedoBtn,
       handleClickSolveBtn,
+      handleClickLastBtn,
+      handleClickNextBtn,
     };
   },
 }).mount("#app");

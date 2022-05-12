@@ -44,6 +44,8 @@
         <div>{{idx}}</div>
       </div>
     </div>
+    <button @click="handleClickUndoBtn">撤销</button>
+    <button @click="handleClickSolveBtn">解答</button>
     <div>
       <div>历史步骤：</div>
       <div style="white-space: pre;">{{ history.join('\n') }}</div>

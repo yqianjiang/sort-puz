@@ -3,7 +3,7 @@ const { createApp, ref, computed } = Vue;
 createApp({
   setup() {
     const activeTube = ref(null);
-    const nTubes = ref(9);
+    const nTubes = ref(2);
     const config = [
       [2, 8, 6, 4],
       [0, 2, 2, 4],
@@ -26,7 +26,20 @@ createApp({
       } else {
         activeTube.value = idx;
       }
+      if (waterTubes.isSorted) {
+        console.log('恭喜完成！');
+      }
     };
+
+    const handleClickUndoBtn = () => {
+      waterTubes.undo();
+      activeTube.value = 0;
+      activeTube.value = null;
+    }
+
+    const handleClickSolveBtn = () => {
+      waterTubes.solve();
+    }
 
     return {
       nTubes,
@@ -34,6 +47,8 @@ createApp({
       activeTube,
       history,
       handleClickTube,
+      handleClickUndoBtn,
+      handleClickSolveBtn,
     };
   },
 }).mount("#app");

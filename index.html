@@ -11,17 +11,19 @@
       margin: 0;
     }
     #app {
-      display: flex;
       padding: 10px;
     }
+    .tube-wrap {
+      display: flex;
+      padding-top: 20px;
+    }
     .tube {
-      border: 1px solid black;
       width: 20px;
       margin-right: 15px;
       height: fit-content;
     }
     .tube-active {
-      border: 3px solid yellow;
+      transform: translateY(-10px);
     }
     .tube__layer {
       border: 1px solid black;
@@ -34,8 +36,17 @@
 <body>
   <!-- <label>管子数量<input v-model="nTubes"></label> -->
   <div id="app">
-    <div class="tube" v-for="(arr, idx) in arrLists" :class="idx===activeTube ? 'tube-active' : ''" @click="handleClickTube(idx)">
-      <div class="tube__layer" v-for="color in arr" :style="`background: ${color}`"></div>
+    <div class="tube-wrap">
+      <div v-for="(arr, idx) in arrLists" >
+        <div class="tube" :class="idx===activeTube ? 'tube-active' : ''" @click="handleClickTube(idx)">
+          <div class="tube__layer" v-for="color in arr" :style="`background: ${color}`"></div>
+        </div>
+        <div>{{idx}}</div>
+      </div>
+    </div>
+    <div>
+      <div>历史步骤：</div>
+      <div style="white-space: pre;">{{ history.join('\n') }}</div>
     </div>
   </div>
   <script src="waterTube.js"></script>

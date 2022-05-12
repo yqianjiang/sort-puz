@@ -13,6 +13,7 @@ const COLORS = [
 class WaterTubes {
   constructor(config, n) {
     this.data = [];
+    this.history = [];
     this.initArrLists(config, n);
   }
 
@@ -67,7 +68,8 @@ class WaterTubes {
   move(from, to) {
     while(this.canMove(from, to)) {
       const color = this.pop(from);
-      this.push(to, color)
+      this.push(to, color);
+      this.history.push(`move ${color} from ${from} to ${to}`);
     }
   }
 }

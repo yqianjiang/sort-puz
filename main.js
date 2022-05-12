@@ -15,6 +15,7 @@ createApp({
     ];
     const waterTubes = new WaterTubes(config, nTubes.value);
     const arrLists = ref(waterTubes.data);
+    const history = ref(waterTubes.history);
 
     const handleClickTube = (idx) => {
       if (activeTube.value === idx) {
@@ -31,6 +32,7 @@ createApp({
       nTubes,
       arrLists,
       activeTube,
+      history,
       handleClickTube,
     };
   },

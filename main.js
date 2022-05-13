@@ -78,6 +78,7 @@ createApp({
       state,
       activeTube,
       history,
+      COLORS_MAP,
       currConfigIdx,
       handleClickTube,
       handleClickResetBtn,

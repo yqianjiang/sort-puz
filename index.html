@@ -37,11 +37,12 @@
     <!-- <label>管子数量<input v-model="nTubes"></label> -->
     <h1>SortPuz: Water Color Sort Puzzle Game</h1>
     <p>把相同颜色的饮料都倒到同一个杯子里吧！</p>
+    <br/>
     <div id="app">
-      <div>
+      <h2>
         第{{ currConfigIdx + 1 }}关
         <button @click="handleClickResetBtn">reset</button>
-      </div>
+      </h2>
       <div class="tube-wrap">
         <div v-for="(arr, idx) in state">
           <div

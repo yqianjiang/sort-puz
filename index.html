@@ -34,7 +34,6 @@
     <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
   </head>
   <body>
-    <!-- <label>管子数量<input v-model="nTubes"></label> -->
     <h1>SortPuz: Water Color Sort Puzzle Game</h1>
     <p>把相同颜色的饮料都倒到同一个杯子里吧！</p>
     <br/>
@@ -53,7 +52,7 @@
             <div
               class="tube__layer"
               v-for="color in arr"
-              :style="`background: ${COLORS_MAP[color] || color}`"
+              :style="`background: ${colorsMap[color] || color}`"
             ></div>
           </div>
           <div>{{idx}}</div>
@@ -64,6 +63,8 @@
       <button @click="handleClickSolveBtn">解答</button>
       <button @click="handleClickLastBtn">上一关</button>
       <button @click="handleClickNextBtn">下一关</button>
+      <button @click="nTubes--" :disable="nTubes <= 0">减少空杯子</button>
+      <button @click="nTubes++">增加空杯子</button>
       <div>
         <div>历史步骤：</div>
         <div style="white-space: pre">

@@ -56,7 +56,7 @@ createApp({
     }
 
     const handleClickLastBtn = () => {
-      if (currConfigIdx.value - 1 > 0) {
+      if (currConfigIdx.value > 0) {
         currConfigIdx.value -= 1;
       } else {
         console.log('没有上一关了');
@@ -65,7 +65,7 @@ createApp({
     }
 
     const handleClickNextBtn = () => {
-      if (currConfigIdx.value + 1 < configs.length) {
+      if (currConfigIdx.value < configs.length - 1) {
         currConfigIdx.value += 1;
       } else {
         console.log('没有下一关了');

@@ -1,4 +1,5 @@
 const { createApp, ref, computed } = Vue;
+// var waterTubes;
 
 createApp({
   setup() {
@@ -6,18 +7,26 @@ createApp({
     const nTubes = ref(2);
     const nLayers = ref(4);
     const currConfigIdx = ref(0);
-    let waterTubes;
     const state = ref([]);
     const history = ref([]);
-    const colorsMap = ref(COLORS_MAP);
-
+    let waterTubes;
+    
     const reset = () => {
-      waterTubes = new WaterTubes(configs[currConfigIdx.value], nTubes.value);
+      const config = configs[currConfigIdx.value]
+      waterTubes = new WaterTubes(config, nTubes.value);
       state.value = waterTubes.data;
       history.value = waterTubes.history;
+      nLayers.value = waterTubes.nLayers;
     }
-
+    
     reset();
+
+    const getHistoryText = () => {
+      return history.value.map(x=>`move ${COLORS[x.color] || x.color} x ${x.count} from ${x.from} to ${x.to}`).join('\n')
+    };
+    const getColor = (arr, i) => {
+      return COLORS_MAP[arr[i]] || arr[i] || 'transperant'
+    }
 
     const getRandomNum = (min, max) => {
       return Math.random() * (max - min);
@@ -102,12 +111,13 @@ createApp({
     }
 
     return {
-      nTubes,
       state,
+      nTubes,
+      nLayers,
       activeTube,
-      history,
-      colorsMap,
       currConfigIdx,
+      getHistoryText,
+      getColor,
       handleClickTube,
       handleClickResetBtn,
       handleClickUndoBtn,

@@ -15,6 +15,7 @@
       }
       .tube-wrap {
         display: flex;
+        flex-wrap: wrap;
         padding-top: 20px;
       }
       .tube {
@@ -52,8 +53,8 @@
           >
             <div
               class="tube__layer"
-              v-for="color in arr"
-              :style="`background: ${colorsMap[color] || color}`"
+              v-for="i in nLayers"
+              :style="`background: ${getColor(arr, 4-i)}`"
             ></div>
           </div>
           <div>{{idx}}</div>
@@ -69,7 +70,7 @@
       <div>
         <div>历史步骤：</div>
         <div style="white-space: pre">
-          {{ history.map(x=>`move ${x.color} x ${x.count} from ${x.from} to ${x.to}`).join('\n') }}
+          {{ getHistoryText() }}
         </div>
       </div>
     </div>

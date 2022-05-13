@@ -4,61 +4,38 @@ class WaterTubes {
     this.history = [];
     this._historyData = [];
     this._redoHistory = [];
-    this._nLayers = 4;
+    this.nLayers = 4;
     this.updateData(config, nEmpty);
     this.initial = JSON.parse(JSON.stringify(this.data));
   }
 
   updateData(config, nEmpty) {
-    this.data = [];
-    this._nLayers = config[0].length;
-    for (let i = 0; i < config.length; i++) {
-      if (typeof config[i][0] === "number") {
-        this.data[i] = config[i].map((idx) => COLORS[idx]);
-      } else {
-        this.data[i] = [...config[i]];
-      }
-    }
+    this.data = JSON.parse(JSON.stringify(config));
+    this.nLayers = config[0].length;
     for (let i = 0; i < nEmpty; i++) {
-      this.data[config.length + i] = ["", "", "", ""];
+      this.data[config.length + i] = [];
     }
   }
 
   getFirst(row) {
-    let i = 0;
-    let result;
-    while (!result && i < this.data[row].length) {
-      result = this.data[row][i];
-      i++;
-    }
-    return [result, i - 1];
+    return this.data[row][this.data[row].length - 1];
   }
 
   pop(row) {
-    const [result, idx] = this.getFirst(row);
-    if (result && idx < this.data[row].length) {
-      this.data[row][idx] = null;
-    }
-    return result;
+    return this.data[row].pop();
   }
 
   push(row, newItem) {
-    const arr = this.data[row];
-    for (let i = arr.length - 1; i >= 0; i--) {
-      if (!arr[i]) {
-        arr[i] = newItem;
-        break;
-      }
-    }
+    this.data[row].push(newItem);
   }
 
   canMove(from, to) {
-    const [existColor, j] = this.getFirst(to);
-    if (!existColor) return true; // 空的，任何颜色都可以
-    if (!j) return false; // 满的，任何颜色都不行
-
+    if (!this.data[to].length) return true; // 空的，任何颜色都可以
+    if (this.data[to].length === this.nLayers) return false; // 满的，任何颜色都不行
+    
     // 有空位，需要判断颜色是否相同
-    const [toMoveColor, idx] = this.getFirst(from);
+    const existColor = this.getFirst(to);
+    const toMoveColor = this.getFirst(from);
     if (toMoveColor === existColor) {
       return true;
     }
@@ -119,13 +96,10 @@ class WaterTubes {
   }
 
   ifArrIsSorted(arr) {
-    const color = arr[0];
-    for (const item of arr) {
-      if (item !== color) {
-        return false;
-      }
-    }
-    return true;
+    if (arr.length === 0) return true;
+    if (arr.length !== this.nLayers) return false;
+    const set = new Set(arr);
+    return set.size === 1;
   }
 
   checkData() {
@@ -142,7 +116,7 @@ class WaterTubes {
     }
     const vari = new Set(Object.values(countMap));
     for (const num of vari) {
-      if (num % this._nLayers > 0) {
+      if (num % this.nLayers > 0) {
         console.log("题目不符合规定，请检查");
         return false;
       }
@@ -155,15 +129,18 @@ class WaterTubes {
       return false;
     }
 
+    const compressData = () => this.data.join(';');
+    // const compressData = () => JSON.stringify(this.data);
+
     const dfs = () => {
       // 检查是否已经全分类好了
       if (this.isSorted) return true;
 
       // 不走重复的状态
-      if (this._historyData.includes(JSON.stringify(this.data))) {
+      if (this._historyData.includes(compressData())) {
         return false;
       }
-      this._historyData.push(JSON.stringify(this.data));
+      this._historyData.push(compressData());
 
       // 遍历找到可以的from, to
       for (let from = 0; from < this.data.length; from++) {
@@ -191,7 +168,7 @@ class WaterTubes {
     if (dfs()) {
       // TODO: 动画重走一遍history
     } else {
-      console.log('无解');
+      console.log("无解");
     }
   }
 }

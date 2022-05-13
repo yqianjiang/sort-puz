@@ -4,6 +4,7 @@ createApp({
   setup() {
     const activeTube = ref(null);
     const nTubes = ref(2);
+    const nLayers = ref(4);
     const currConfigIdx = ref(0);
     let waterTubes;
     const state = ref([]);
@@ -17,6 +18,29 @@ createApp({
     }
 
     reset();
+
+    const getRandomNum = (min, max) => {
+      return Math.random() * (max - min);
+    }
+
+    const getRandomConfig = (n) => {
+      console.log('getRandomConfig');
+      const config = new Array(n).fill(1).map((x, i)=>{
+        const result = [];
+        for (let j=0; j<nLayers.value; j++) {
+          result.push(i); 
+        }
+        return result;
+      });
+      for (let i=0; i<n; i++) {
+        for (let j=0; j<nLayers.value; j++) {
+          const x = Math.round(getRandomNum(0, n-1));
+          const y = Math.round(getRandomNum(0, nLayers.value-1));
+          [config[i][j], config[x][y]] = [config[x][y], config[i][j]];
+        }
+      }
+      return config;
+    }
 
     const handleClickTube = (idx) => {
       if (activeTube.value === idx) {
@@ -69,7 +93,10 @@ createApp({
       if (currConfigIdx.value < configs.length - 1) {
         currConfigIdx.value += 1;
       } else {
-        console.log('没有下一关了');
+        const n = configs[currConfigIdx.value].length;
+        const dn = n < COLORS.length ? 1 : 0;
+        configs.push(getRandomConfig(n + dn));
+        currConfigIdx.value += 1;
       }
       reset();
     }

@@ -4,12 +4,14 @@ class WaterTubes {
     this.history = [];
     this._historyData = [];
     this._redoHistory = [];
+    this._nLayers = 4;
     this.updateData(config, nEmpty);
     this.initial = JSON.parse(JSON.stringify(this.data));
   }
 
   updateData(config, nEmpty) {
     this.data = [];
+    this._nLayers = config[0].length;
     for (let i = 0; i < config.length; i++) {
       if (typeof config[i][0] === "number") {
         this.data[i] = config[i].map((idx) => COLORS[idx]);
@@ -140,7 +142,7 @@ class WaterTubes {
     }
     const vari = new Set(Object.values(countMap));
     for (const num of vari) {
-      if (num % 4 > 0) {
+      if (num % this._nLayers > 0) {
         console.log("题目不符合规定，请检查");
         return false;
       }
@@ -188,6 +190,8 @@ class WaterTubes {
 
     if (dfs()) {
       // TODO: 动画重走一遍history
-    };
+    } else {
+      console.log('无解');
+    }
   }
 }

@@ -1,14 +1,30 @@
 const COLORS = [
-  "red",
-  "green",
-  "blue",
-  "gray",
-  "purple",
-  "yellow",
-  "pink",
-  "orange",
-  "brown",
+  "red",   // 0: red
+  "green",   // 1: green
+  "blue",   // 2: blue
+  "gray",   // 3: gray
+  "purple",   // 4: purple
+  "yellow",   // 5: yellow
+  "pink",   // 6: pink
+  "orange",   // 7: orange
+  "brown",   // 8: brown
+  "whiteBlue",   // 9: 浅蓝
+  "whiteGreen",   // 10: 浅绿（青色）
 ];
+
+const COLORS_MAP = {
+  red: "#F44336",   // 0: red
+  green: "#4CAF50",   // 1: green
+  blue: "#2196F3",   // 2: 
+  gray: "#BDBDBD",   // 3: 
+  purple: "#BA68C8",   // 4: purple
+  yellow: "#FFEB3B",   // 5: yellow
+  pink: "#EF9A9A",   // 6: pink
+  orange: "#FFB74D",   // 7: orange
+  brown: "#795548",   // 8: brown
+  whiteBlue: "#60a5fa",   // 9: 浅蓝
+  whiteGreen: "#80CBC4",   // 10: 浅绿（青色）
+};
 
 const configs = [
   [

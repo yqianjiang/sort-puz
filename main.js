@@ -8,6 +8,7 @@ createApp({
     let waterTubes;
     const state = ref([]);
     const history = ref([]);
+    const COLORS_MAP = ref(COLORS_MAP);
 
     const reset = () => {
       waterTubes = new WaterTubes(configs[currConfigIdx.value], nTubes.value);

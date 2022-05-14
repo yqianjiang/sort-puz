@@ -163,7 +163,10 @@ class WaterTubes {
     const compressData = () => this.data.join(";");
     // const compressData = () => JSON.stringify(this.data);
 
+    let nDfsCall = 0;
+    const nMaxCall = 65686;  // 65686次大概会卡5535ms；103226次大约会卡14598ms
     const dfs = () => {
+      nDfsCall++;
       // 检查是否已经全分类好了
       if (this.isSorted) return true;
 
@@ -187,12 +190,12 @@ class WaterTubes {
 
           // 颜色完全相同的from不移动到空白的to
           if (this.ifArrIsUnique(fromArr) && !toArr.length) {
-            return false;
+            continue;
           }
 
           // 试走这一步，如果最后走不通就undo（回溯）
           this.move(from, to);
-          if (dfs()) {
+          if (nDfsCall < nMaxCall && dfs()) {
             return true;
           } else {
             this.undo();
@@ -204,10 +207,16 @@ class WaterTubes {
     };
 
     if (dfs()) {
+      console.log(nDfsCall);
       this.solveSteps = JSON.parse(JSON.stringify(this.history));;
       return true;
-    } else {
+    } else if (nDfsCall < nMaxCall) {
+      console.log(nDfsCall);
       console.log("无解");
+      return false;
+    } else {
+      console.log(nDfsCall);
+      console.log("超时");
       return false;
     }
   }

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0; max-scale=1.0" />
     <title>SortPuz: Water Color Sort Puzzle Game</title>
     <style>
       * {
@@ -15,20 +15,22 @@
       }
       button {
         padding: 5px;
-        margin-right: 5px;
+        margin: 0 5px 5px 0;
         background: white;
         border: 1px solid gray;
         border-radius: 5px;
       }
+      .btn-wrap {
+        margin-bottom: 20px;
+      }
       .tube-wrap {
         display: flex;
         flex-wrap: wrap;
-        padding-top: 20px;
+        padding-top: 15px;
       }
       .tube {
         width: 30px;
         margin-right: 20px;
-        margin-top: 20px;
         height: fit-content;
       }
       .tube-active {
@@ -59,7 +61,7 @@
         <button @click="handleClickResetBtn">reset</button>
       </h2>
       <div class="tube-wrap">
-        <div v-for="(arr, idx) in state">
+        <div v-for="(arr, idx) in state" style="margin-bottom: 20px">
           <div
             class="tube"
             :class="idx===activeTube ? 'tube-active' : ''"
@@ -74,13 +76,15 @@
           <div>{{idx}}</div>
         </div>
       </div>
-      <button @click="handleClickUndoBtn">撤销</button>
-      <button @click="handleClickRedoBtn">重做</button>
-      <button @click="handleClickSolveBtn">解答</button>
-      <button @click="handleClickLastBtn">上一关</button>
-      <button @click="handleClickNextBtn">下一关</button>
-      <button @click="nTubes--" :disabled="nTubes <= 0">减少空杯子</button>
-      <button @click="nTubes++">增加空杯子</button>
+      <div class="btn-wrap">
+        <button @click="handleClickUndoBtn">撤销</button>
+        <button @click="handleClickRedoBtn">重做</button>
+        <button @click="handleClickSolveBtn">解答</button>
+        <button @click="handleClickLastBtn">上一关</button>
+        <button @click="handleClickNextBtn">下一关</button>
+        <button @click="nTubes--" :disabled="nTubes <= 0">减少空杯子</button>
+        <button @click="nTubes++">增加空杯子</button>
+      </div>
       <div>
         <div>历史步骤：</div>
         <div style="white-space: pre">

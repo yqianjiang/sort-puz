@@ -7,8 +7,10 @@ const myapp = createApp({
     const nTubes = ref(2);
     const nLayers = ref(4);
     const currConfigIdx = ref(0);
+    const configsLen = ref(configs.length);
     const state = ref([]);
     let waterTubes;
+    let timer;
     
     const reset = () => {
       const config = configs[currConfigIdx.value]
@@ -29,6 +31,7 @@ const myapp = createApp({
       const _configs = localStorage.getItem('sortPuz: configs');
       if (_configs) {
         configs = JSON.parse(_configs);
+        configsLen.value = configs.length;
       }
     }
     const load = () => {
@@ -57,6 +60,9 @@ const myapp = createApp({
     const getHistoryText = () => {
       return waterTubes.history.map(x=>`move ${COLORS[x.color] || x.color} x ${x.count} from ${x.from} to ${x.to}`).join('\n')
     };
+    const getHistoryLength = () => {
+      return waterTubes.history.length;
+    }
     const getColor = (arr, i) => {
       return COLORS_MAP[arr[i]] || arr[i] || 'transperant'
     }
@@ -87,6 +93,7 @@ const myapp = createApp({
         }
       }
       configs.push(config);
+      configsLen.value = configs.length;
       localStorage.setItem('sortPuz: configs', JSON.stringify(configs));
     }
 
@@ -111,46 +118,77 @@ const myapp = createApp({
     }
 
     const handleClickResetBtn = () => {
-      reset();
+      clearTimeout(timer);
+      // reset();
+      waterTubes.reset();
+      updateView();
       save();
     }
 
     const handleClickUndoBtn = () => {
+      clearTimeout(timer);
       waterTubes.undo();
       updateView();
       save();
     }
     
-    const handleClickRedoBtn = () => {
+    const handleClickRedoBtn = (auto) => {
+      if (!auto) {
+        clearTimeout(timer);
+      }
       waterTubes.redo();
       updateView();
       save();
     }
-    
+
     const handleClickSolveBtn = () => {
       waterTubes.solve();
       updateView();
       save();
     }
 
+    const handleClickPlayBtn = () => {
+      function solveAnimation(interval = 500) {
+        function step() {  
+          handleClickRedoBtn(true);
+    
+          if (waterTubes._redoHistory.length) {
+            timer = setTimeout(() => {
+              window.requestAnimationFrame(step);
+            }, interval);
+          }
+        }
+    
+        window.requestAnimationFrame(step);
+      }
+
+      const initialHistoryLen = waterTubes.history.length;
+      if(waterTubes.solve()) {
+        // undo 到 initialHistoryLen
+        while(waterTubes.history.length > initialHistoryLen) {
+          waterTubes.undo();
+        }
+        solveAnimation();
+      }
+      save();
+    }
+
     const handleClickLastBtn = () => {
+      clearTimeout(timer);
       currConfigIdx.value -= 1;
-      reset();
-      load();
     }
 
     const handleClickNextBtn = () => {
-      if (currConfigIdx.value < configs.length - 1) {
-        currConfigIdx.value += 1;
-      } else {
+      clearTimeout(timer);
+      if (currConfigIdx.value >= configs.length - 1) {
         getRandomConfig();
-        currConfigIdx.value += 1;
       }
-      reset();
-      load();
+      currConfigIdx.value += 1;
     }
 
     watch(currConfigIdx, () => {
+      reset();
+      load();
       localStorage.setItem('sortPuz: currConfigIdx', currConfigIdx.value);
     })
 
@@ -160,13 +198,16 @@ const myapp = createApp({
       nLayers,
       activeTube,
       currConfigIdx,
+      configsLen,
       getHistoryText,
+      getHistoryLength,
       getColor,
       handleClickTube,
       handleClickResetBtn,
       handleClickUndoBtn,
       handleClickRedoBtn,
       handleClickSolveBtn,
+      handleClickPlayBtn,
       handleClickLastBtn,
       handleClickNextBtn,
     };

@@ -7,6 +7,7 @@ class WaterTubes {
     this._redoHistory = [];
     this.updateData(config, nEmpty);
     this.initial = JSON.parse(JSON.stringify(this.data));
+    this.solveSteps = null;
   }
 
   updateData(config, nEmpty) {
@@ -16,7 +17,7 @@ class WaterTubes {
       this.data[config.length + i] = [];
     }
   }
-  
+
   loadData(data, history, nLayers) {
     this.data = data;
     this.nLayers = nLayers;
@@ -57,7 +58,7 @@ class WaterTubes {
   }
 
   move(from, to) {
-    if (!this.canMove(from, to)) return;
+    if (!this.canMove(from, to)) return false;
     let color;
     let count = 0;
     while (this.canMove(from, to)) {
@@ -67,7 +68,9 @@ class WaterTubes {
     if (count) {
       this.history.push({ from, to, count, color });
       this._redoHistory = [];
+      return true;
     }
+    return false;
   }
 
   undo() {
@@ -91,8 +94,9 @@ class WaterTubes {
   }
 
   reset() {
-    this.data = JSON.parse(JSON.stringify(this.initial));
-    // 没有重置history, 会影响undo, redo那些
+    while(this.history.length) {
+      this.undo();
+    }
   }
 
   get isSorted() {
@@ -104,11 +108,15 @@ class WaterTubes {
     return true;
   }
 
+  ifArrIsUnique(arr) {
+    const set = new Set(arr);
+    return set.size === 1;
+  }
+
   ifArrIsSorted(arr) {
     if (arr.length === 0) return true;
     if (arr.length !== this.nLayers) return false;
-    const set = new Set(arr);
-    return set.size === 1;
+    return this.ifArrIsUnique(arr);
   }
 
   checkData() {
@@ -134,6 +142,20 @@ class WaterTubes {
   }
 
   solve() {
+    if (this.solveSteps) {
+      let hasChange = false;
+      while (this.solveSteps.length > this.history.length) {
+        const { from, to } = this.solveSteps[this.history.length];
+        if (!this.move(from, to)) {
+          hasChange = true;
+          break;
+        }
+      }
+      if (!hasChange) {
+        return true;
+      }
+    }
+
     if (!this.checkData()) {
       return false;
     }
@@ -154,11 +176,18 @@ class WaterTubes {
       // 遍历找到可以的from, to
       for (let from = 0; from < this.data.length; from++) {
         // 不再移动已经排好的管子
-        if (this.ifArrIsSorted(this.data[from])) continue;
+        const fromArr = this.data[from];
+        if (this.ifArrIsSorted(fromArr)) continue;
 
         for (let to = 0; to < this.data.length; to++) {
           if (from === to || !this.canMove(from, to)) {
             continue;
+          }
+          const toArr = this.data[to];
+
+          // 颜色完全相同的from不移动到空白的to
+          if (this.ifArrIsUnique(fromArr) && !toArr.length) {
+            return false;
           }
 
           // 试走这一步，如果最后走不通就undo（回溯）
@@ -175,9 +204,11 @@ class WaterTubes {
     };
 
     if (dfs()) {
-      // TODO: 动画重走一遍history
+      this.solveSteps = JSON.parse(JSON.stringify(this.history));;
+      return true;
     } else {
       console.log("无解");
+      return false;
     }
   }
 }

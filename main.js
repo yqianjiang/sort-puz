@@ -18,8 +18,23 @@ createApp({
       history.value = waterTubes.history;
       nLayers.value = waterTubes.nLayers;
     }
+    const save = () => {
+      localStorage.setItem(`sortPuz: state ${currConfigIdx.value}`, JSON.stringify(state.value));
+      localStorage.setItem(`sortPuz: history ${currConfigIdx.value}`, JSON.stringify(history.value));
+    }
+    const load = () => {
+      const data =  JSON.parse(localStorage.getItem(`sortPuz: state ${currConfigIdx.value}`));
+      const history =  JSON.parse(localStorage.getItem(`sortPuz: history ${currConfigIdx.value}`));
+      if (data && history) {
+        waterTubes.loadData(data, history);
+        state.value = waterTubes.data;
+        history.value = waterTubes.history;
+        nLayers.value = waterTubes.nLayers;
+      }
+    }
     
     reset();
+    load();
 
     const getHistoryText = () => {
       return history.value.map(x=>`move ${COLORS[x.color] || x.color} x ${x.count} from ${x.from} to ${x.to}`).join('\n')
@@ -63,6 +78,7 @@ createApp({
       if (waterTubes.isSorted) {
         console.log('恭喜完成！');
       }
+      save();
     };
 
     const updateView = () => {
@@ -72,33 +88,40 @@ createApp({
 
     const handleClickResetBtn = () => {
       reset();
+      save();
     }
 
     const handleClickUndoBtn = () => {
       waterTubes.undo();
       updateView();
+      save();
     }
-
+    
     const handleClickRedoBtn = () => {
       waterTubes.redo();
       updateView();
+      save();
     }
     
     const handleClickSolveBtn = () => {
       waterTubes.solve();
       updateView();
+      save();
     }
 
     const handleClickLastBtn = () => {
       if (currConfigIdx.value > 0) {
+        save();
         currConfigIdx.value -= 1;
       } else {
         console.log('没有上一关了');
       }
       reset();
+      load();
     }
 
     const handleClickNextBtn = () => {
+      save();
       if (currConfigIdx.value < configs.length - 1) {
         currConfigIdx.value += 1;
       } else {
@@ -108,6 +131,7 @@ createApp({
         currConfigIdx.value += 1;
       }
       reset();
+      load();
     }
 
     return {

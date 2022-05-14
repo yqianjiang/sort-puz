@@ -16,6 +16,15 @@ class WaterTubes {
       this.data[config.length + i] = [];
     }
   }
+  
+  loadData(data, history) {
+    this.data = data;
+    this.history = history;
+    this._historyData = [];
+    this._redoHistory = [];
+    this.nLayers = data[0].length;
+    this.initial = JSON.parse(JSON.stringify(this.data));
+  }
 
   getFirst(row) {
     return this.data[row][this.data[row].length - 1];
@@ -32,7 +41,7 @@ class WaterTubes {
   canMove(from, to) {
     if (!this.data[to].length) return true; // 空的，任何颜色都可以
     if (this.data[to].length === this.nLayers) return false; // 满的，任何颜色都不行
-    
+
     // 有空位，需要判断颜色是否相同
     const existColor = this.getFirst(to);
     const toMoveColor = this.getFirst(from);
@@ -55,7 +64,7 @@ class WaterTubes {
       color = this._move(from, to);
       count++;
     }
-    if (color) {
+    if (count) {
       this.history.push({ from, to, count, color });
       this._redoHistory = [];
     }
@@ -129,7 +138,7 @@ class WaterTubes {
       return false;
     }
 
-    const compressData = () => this.data.join(';');
+    const compressData = () => this.data.join(";");
     // const compressData = () => JSON.stringify(this.data);
 
     const dfs = () => {

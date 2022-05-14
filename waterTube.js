@@ -1,10 +1,10 @@
 class WaterTubes {
   constructor(config, nEmpty) {
     this.data = [];
+    this.nLayers = 4;
     this.history = [];
     this._historyData = [];
     this._redoHistory = [];
-    this.nLayers = 4;
     this.updateData(config, nEmpty);
     this.initial = JSON.parse(JSON.stringify(this.data));
   }
@@ -17,12 +17,12 @@ class WaterTubes {
     }
   }
   
-  loadData(data, history) {
+  loadData(data, history, nLayers) {
     this.data = data;
+    this.nLayers = nLayers;
     this.history = history;
     this._historyData = [];
     this._redoHistory = [];
-    this.nLayers = data[0].length;
     this.initial = JSON.parse(JSON.stringify(this.data));
   }
 

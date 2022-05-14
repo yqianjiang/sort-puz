@@ -8,27 +8,23 @@ createApp({
     const nLayers = ref(4);
     const currConfigIdx = ref(0);
     const state = ref([]);
-    const history = ref([]);
     let waterTubes;
     
     const reset = () => {
       const config = configs[currConfigIdx.value]
       waterTubes = new WaterTubes(config, nTubes.value);
       state.value = waterTubes.data;
-      history.value = waterTubes.history;
       nLayers.value = waterTubes.nLayers;
     }
     const save = () => {
-      localStorage.setItem(`sortPuz: state ${currConfigIdx.value}`, JSON.stringify(state.value));
-      localStorage.setItem(`sortPuz: history ${currConfigIdx.value}`, JSON.stringify(history.value));
+      localStorage.setItem(`sortPuz: data ${currConfigIdx.value}`, JSON.stringify([state.value, waterTubes.history, nLayers.value]));
     }
     const load = () => {
-      const data =  JSON.parse(localStorage.getItem(`sortPuz: state ${currConfigIdx.value}`));
-      const history =  JSON.parse(localStorage.getItem(`sortPuz: history ${currConfigIdx.value}`));
-      if (data && history) {
-        waterTubes.loadData(data, history);
+      const obj =  JSON.parse(localStorage.getItem(`sortPuz: data ${currConfigIdx.value}`));
+      if (obj) {
+        const [data, history, nLayers] = obj;
+        waterTubes.loadData(data, history, nLayers);
         state.value = waterTubes.data;
-        history.value = waterTubes.history;
         nLayers.value = waterTubes.nLayers;
       }
     }
@@ -37,7 +33,7 @@ createApp({
     load();
 
     const getHistoryText = () => {
-      return history.value.map(x=>`move ${COLORS[x.color] || x.color} x ${x.count} from ${x.from} to ${x.to}`).join('\n')
+      return waterTubes.history.map(x=>`move ${COLORS[x.color] || x.color} x ${x.count} from ${x.from} to ${x.to}`).join('\n')
     };
     const getColor = (arr, i) => {
       return COLORS_MAP[arr[i]] || arr[i] || 'transperant'

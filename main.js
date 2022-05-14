@@ -1,7 +1,7 @@
 const { createApp, ref, computed } = Vue;
 // var waterTubes;
 
-createApp({
+const myapp = createApp({
   setup() {
     const activeTube = ref(null);
     const nTubes = ref(2);
@@ -18,8 +18,13 @@ createApp({
     }
     const save = () => {
       localStorage.setItem(`sortPuz: data ${currConfigIdx.value}`, JSON.stringify([state.value, waterTubes.history, nLayers.value]));
+      localStorage.setItem('sortPuz: currConfigIdx', currConfigIdx.value);
     }
-    const load = () => {
+    const load = (loadCurrConfigIdx) => {
+      if (loadCurrConfigIdx) {
+        const curr = +localStorage.getItem('sortPuz: currConfigIdx');
+        currConfigIdx.value = curr || 0;
+      }
       const obj =  JSON.parse(localStorage.getItem(`sortPuz: data ${currConfigIdx.value}`));
       if (obj) {
         const [data, history, nLayers] = obj;
@@ -30,7 +35,7 @@ createApp({
     }
     
     reset();
-    load();
+    load(true);
 
     const getHistoryText = () => {
       return waterTubes.history.map(x=>`move ${COLORS[x.color] || x.color} x ${x.count} from ${x.from} to ${x.to}`).join('\n')

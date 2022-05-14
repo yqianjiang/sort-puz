@@ -45,7 +45,7 @@ const last = [
   [7, 4, 5, 6],
 ];
 
-const configs = [
+let configs = [
   [
     [2, 8, 6, 4],
     [0, 2, 2, 4],

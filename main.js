@@ -1,4 +1,4 @@
-const { createApp, ref, computed } = Vue;
+const { createApp, ref, computed, watch } = Vue;
 // var waterTubes;
 
 const myapp = createApp({
@@ -17,14 +17,30 @@ const myapp = createApp({
       nLayers.value = waterTubes.nLayers;
     }
     const save = () => {
-      localStorage.setItem(`sortPuz: data ${currConfigIdx.value}`, JSON.stringify([state.value, waterTubes.history, nLayers.value]));
-      localStorage.setItem('sortPuz: currConfigIdx', currConfigIdx.value);
-    }
-    const load = (loadCurrConfigIdx) => {
-      if (loadCurrConfigIdx) {
-        const curr = +localStorage.getItem('sortPuz: currConfigIdx');
-        currConfigIdx.value = curr || 0;
+      if (waterTubes.history.length) {
+        localStorage.setItem(`sortPuz: data ${currConfigIdx.value}`, JSON.stringify([state.value, waterTubes.history, nLayers.value]));
+      } else {
+        localStorage.removeItem(`sortPuz: data ${currConfigIdx.value}`);
       }
+    }
+    const init = () => {
+      const curr = +localStorage.getItem('sortPuz: currConfigIdx');
+      currConfigIdx.value = curr || 0;
+      const _configs = localStorage.getItem('sortPuz: configs');
+      if (_configs) {
+        configs = JSON.parse(_configs);
+      }
+    }
+    const load = () => {
+      // 兼容
+      const missConfigs = currConfigIdx.value + 1 - configs.length;
+      if (missConfigs > 0) {
+        for (let i=currConfigIdx.value; i >= configs.length; i--) {
+          localStorage.removeItem(`sortPuz: data ${i}`);
+        }
+        currConfigIdx.value = configs.length - 1;
+      }
+
       const obj =  JSON.parse(localStorage.getItem(`sortPuz: data ${currConfigIdx.value}`));
       if (obj) {
         const [data, history, nLayers] = obj;
@@ -34,8 +50,9 @@ const myapp = createApp({
       }
     }
     
+    init();
     reset();
-    load(true);
+    load();
 
     const getHistoryText = () => {
       return waterTubes.history.map(x=>`move ${COLORS[x.color] || x.color} x ${x.count} from ${x.from} to ${x.to}`).join('\n')
@@ -48,8 +65,13 @@ const myapp = createApp({
       return Math.random() * (max - min);
     }
 
-    const getRandomConfig = (n) => {
+    const getRandomConfig = () => {
       console.log('getRandomConfig');
+
+      let n = configs[currConfigIdx.value].length;
+      const dn = n < COLORS.length ? 1 : 0;
+      n += dn;
+
       const config = new Array(n).fill(1).map((x, i)=>{
         const result = [];
         for (let j=0; j<nLayers.value; j++) {
@@ -64,7 +86,8 @@ const myapp = createApp({
           [config[i][j], config[x][y]] = [config[x][y], config[i][j]];
         }
       }
-      return config;
+      configs.push(config);
+      localStorage.setItem('sortPuz: configs', JSON.stringify(configs));
     }
 
     const handleClickTube = (idx) => {
@@ -111,29 +134,25 @@ const myapp = createApp({
     }
 
     const handleClickLastBtn = () => {
-      if (currConfigIdx.value > 0) {
-        save();
-        currConfigIdx.value -= 1;
-      } else {
-        console.log('没有上一关了');
-      }
+      currConfigIdx.value -= 1;
       reset();
       load();
     }
 
     const handleClickNextBtn = () => {
-      save();
       if (currConfigIdx.value < configs.length - 1) {
         currConfigIdx.value += 1;
       } else {
-        const n = configs[currConfigIdx.value].length;
-        const dn = n < COLORS.length ? 1 : 0;
-        configs.push(getRandomConfig(n + dn));
+        getRandomConfig();
         currConfigIdx.value += 1;
       }
       reset();
       load();
     }
+
+    watch(currConfigIdx, () => {
+      localStorage.setItem('sortPuz: currConfigIdx', currConfigIdx.value);
+    })
 
     return {
       state,

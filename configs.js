@@ -1,38 +1,24 @@
-const COLORS = [
-  "red", // 0: red
-  "green", // 1: green
-  "blue", // 2: blue
-  "gray", // 3: gray
-  "purple", // 4: purple
-  "yellow", // 5: yellow
-  "pink", // 6: pink
-  "orange", // 7: orange
-  "brown", // 8: brown
-  "whiteBlue", // 9: 浅蓝
-  "whiteGreen", // 10: 浅绿
-  "lightGreen", // 11: lightGreen
-  "aquamarine", // 12: 青色
-  "darkblue", // 13: 暗蓝色
-  "darkOrange", // 14
-];
-
 const COLORS_MAP = {
-  0: "#F44336", // 0: red
-  1: "#4CAF50", // 1: green
-  2: "#1976D2", // 2:
-  3: "#BDBDBD", // 3:
-  4: "#BA68C8", // 4: purple
-  5: "#FFEB3B", // 5: yellow
-  6: "#EF9A9A", // 6: pink
-  7: "#FFB74D", // 7: orange
-  8: "#795548", // 8: brown
-  9: "#90CAF9", // 9: 浅蓝
-  10: "#80CBC4", // 10: 浅绿
-  11: "lightgreen", // 11: lightGreen
-  12: "aquamarine", // 12: 青色
-  13: "darkblue", // 13: 暗蓝色
-  14: "darkorange", // 14
+  red6: "#e34d59", // 0: red6
+  yellow2: "#ffe478", // 5: yellow2
+  green3: "#85dbbe",
+  cyan3: "#85daff",
+  blue7: "#266fe8", // 2: blue7
+  purple7: "#834ec2", // 4: purple7
+  gray5: "#c5c5c5",
+  pink2: "#ffd1fc", // 6: pink2
+  pink6: "#ed49b4",
+  orange5: "#ed7b2f", // 7: orange5
+  // 下面的颜色有点太暗了...
+  yellow9: "#754c00",  // brown
+  green7: "#067945", // 1: green7
+  blueGray8: "#5f7292",
+  blue10: "#001f97",
+  pink9: "#9b006b", // 深玫红色
+  gray9: "#5e5e5e",
 };
+
+const COLORS = Object.keys(COLORS_MAP);
 
 const last = [
   [0, 1, 2, 3],

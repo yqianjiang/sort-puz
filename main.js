@@ -64,7 +64,7 @@ const myapp = createApp({
       return waterTubes.history.length;
     }
     const getColor = (arr, i) => {
-      return COLORS_MAP[arr[i]] || arr[i] || 'transperant'
+      return COLORS_MAP[COLORS[arr[i]]] || arr[i] || 'transperant'
     }
 
     const getRandomNum = (min, max) => {

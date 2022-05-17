@@ -9,6 +9,7 @@ const myapp = createApp({
     const currConfigIdx = ref(0);
     const configsLen = ref(configs.length);
     const state = ref([]);
+    const msg = ref('');
     let waterTubes;
     let timer;
     
@@ -136,13 +137,28 @@ const myapp = createApp({
       if (!auto) {
         clearTimeout(timer);
       }
-      waterTubes.redo();
-      updateView();
-      save();
+      if (!waterTubes._redoHistory?.length) return;
+      const { from } = waterTubes._redoHistory[waterTubes._redoHistory.length-1];
+      activeTube.value = from;
+      setTimeout(() => {        
+        waterTubes.redo();
+        updateView();
+        save();
+      }, 300);
+    }
+
+    const showToast = (_msg, duration=4000) => {
+      msg.value = _msg;
+      setTimeout(() => {
+        msg.value = "";
+      }, duration);
     }
 
     const handleClickSolveBtn = () => {
-      waterTubes.solve();
+      const _msg = waterTubes.solve();
+      if (_msg) {
+        showToast(_msg);
+      }
       updateView();
       save();
     }
@@ -163,15 +179,19 @@ const myapp = createApp({
       }
 
       const initialHistoryLen = waterTubes.history.length;
-      if(waterTubes.solve()) {
+      const _msg = waterTubes.solve();
+      if(!_msg) {
         // undo 到 initialHistoryLen
         while(waterTubes.history.length > initialHistoryLen) {
           waterTubes.undo();
         }
         solveAnimation();
+      } else {
+        showToast(_msg);
       }
       save();
     }
+
 
     const handleClickLastBtn = () => {
       clearTimeout(timer);
@@ -199,6 +219,7 @@ const myapp = createApp({
       activeTube,
       currConfigIdx,
       configsLen,
+      msg,
       getHistoryText,
       getHistoryLength,
       getColor,

@@ -5,22 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SortPuz: Water Color Sort Puzzle Game</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <link rel="alternate stylesheet" href="bootstrap.min.css">
     <style>
-      * {
-        padding: 0;
-        margin: 0;
-      }
-      body {
-        padding: 10px;
-      }
-      .clickable {
-        padding: 5px;
-        margin: 0 5px 5px 0;
-        background: white;
-        border: 1px solid gray;
-        border-radius: 5px;
-        min-height: 35px;
-        min-width: 45px;
+      .toast {
+        text-align: center;
+        width: auto;
+        min-width: 100px;
+        background: rgba(0,0,0,0.7);
+        color: #fff;
       }
       .btn-wrap {
         margin-bottom: 20px;
@@ -53,55 +46,70 @@
     <script src="https://unpkg.com/vue@3.2.33/dist/vue.global.prod.js"></script>
   </head>
   <body>
-    <h1>SortPuz</h1>
-    <h2>Water Color Sort Puzzle Game</h2>
-    <p>把相同颜色的饮料都倒到同一个杯子里吧！</p>
-    <br/>
-    <div id="app">
-      <label>选择关卡
-        <select class="clickable" v-model="currConfigIdx">
-          <option :value="i-1" v-for="i in configsLen">{{i}}</option>
-        </select>
-      </label>
-      <h2 style="display: flex">
-        第{{ currConfigIdx + 1 }}关
-        <button class="clickable" style="margin-left: 10px" @click="handleClickLastBtn" :disabled="!currConfigIdx">上一关</button>
-        <button class="clickable" @click="handleClickNextBtn">下一关</button>
-        <button class="clickable" @click="handleClickResetBtn">reset</button>
-      </h2>
-      <div class="tube-wrap">
-        <div v-for="(arr, idx) in state" style="margin-bottom: 20px">
-          <div
-            class="tube"
-            :class="idx===activeTube ? 'tube-active' : ''"
-            @click="handleClickTube(idx)"
-          >
-            <div
-              class="tube__layer"
-              v-for="i in nLayers"
-              :style="`background: ${getColor(arr, 4-i)}`"
-            ></div>
-          </div>
-          <div>{{idx}}</div>
-        </div>
-      </div>
-      <div class="btn-wrap">
-        <button class="clickable" @click="handleClickUndoBtn">撤销</button>
-        <button class="clickable" @click="handleClickRedoBtn">重做</button>
-        <button class="clickable" @click="handleClickSolveBtn">解答</button>
-        <button class="clickable" @click="handleClickPlayBtn">播放解答动画</button>
+    <div class="container">
+      <div class="row">
+        <h1>SortPuz</h1>
+        <h2>Water Color Sort Puzzle Game</h2>
+        <p>把相同颜色的饮料都倒到同一个杯子里吧！</p>
         <br/>
-        <button class="clickable" @click="nTubes--" :disabled="nTubes <= 0">减少空杯子</button>
-        <button class="clickable" @click="nTubes++">增加空杯子</button>
       </div>
-      <div>
-        <div>步数：{{ getHistoryLength() }}</div>
-        <div>历史步骤：</div>
-        <div style="white-space: pre">
-          {{ getHistoryText() }}
+      <div id="app" class="row">
+        <div class="col hstack gap-2">
+          <label for="level-selector">选择关卡</label>
+          <select id="level-selector" class="btn btn-outline-secondary" v-model="currConfigIdx">
+            <option :value="i-1" v-for="i in configsLen">{{i}}</option>
+          </select>
+        </div>
+        
+        <div class="hstack gap-2 mt-2">
+          <h2 class="m-0">第{{ currConfigIdx + 1 }}关</h2>
+          <button class="btn btn-outline-secondary" style="margin-left: 10px" @click="handleClickLastBtn" :disabled="!currConfigIdx">上一关</button>
+          <button class="btn btn-outline-secondary" @click="handleClickNextBtn">下一关</button>
+          <button class="btn btn-outline-secondary" @click="handleClickResetBtn">reset</button>
+        </div>
+        <div class="tube-wrap">
+          <div v-for="(arr, idx) in state" style="margin-bottom: 20px">
+            <div
+              class="tube"
+              :class="idx===activeTube ? 'tube-active' : ''"
+              @click="handleClickTube(idx)"
+            >
+              <div
+                class="tube__layer"
+                v-for="i in nLayers"
+                :style="`background: ${getColor(arr, 4-i)}`"
+              ></div>
+            </div>
+            <div>{{idx}}</div>
+          </div>
+        </div>
+        <div class="hstack gap-2">
+          <button class="btn btn-outline-secondary" @click="handleClickUndoBtn">撤销</button>
+          <button class="btn btn-outline-secondary" @click="handleClickRedoBtn">重做</button>
+          <button class="btn btn-outline-secondary" @click="handleClickSolveBtn">解答</button>
+          <button class="btn btn-outline-secondary" @click="handleClickPlayBtn">播放解答动画</button>
+        </div>
+        <div class="mt-2 mb-2 hstack gap-2">
+          <button class="btn btn-outline-secondary" @click="nTubes--" :disabled="nTubes <= 0">减少空杯子</button>
+          <button class="btn btn-outline-secondary" @click="nTubes++">增加空杯子</button>
+        </div>
+        <div>
+          <div>步数：{{ getHistoryLength() }}</div>
+          <div>历史步骤：</div>
+          <div style="white-space: pre">
+            {{ getHistoryText() }}
+          </div>
+        </div>
+        <div class="toast-container position-fixed top-50 start-50 translate-middle">
+          <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" :style="msg ? 'display:block':''">
+            <div class="toast-body">
+              {{msg}}
+            </div>
+          </div>
         </div>
       </div>
     </div>
+
     <script src="configs.js"></script>
     <script src="waterTube.js"></script>
     <script src="main.js"></script>

@@ -94,7 +94,7 @@ class WaterTubes {
   }
 
   reset() {
-    while(this.history.length) {
+    while (this.history.length) {
       this.undo();
     }
   }
@@ -152,20 +152,21 @@ class WaterTubes {
         }
       }
       if (!hasChange) {
-        return true;
+        return "";
       }
     }
 
     if (!this.checkData()) {
-      return false;
+      return "数据不符合格式";
     }
 
     const compressData = () => this.data.join(";");
     // const compressData = () => JSON.stringify(this.data);
 
     let nDfsCall = 0;
-    const nMaxCall = 65686;  // 65686次大概会卡5535ms；103226次大约会卡14598ms
+    const nMaxCall = 15686; // 65686次大概会卡5535ms；103226次大约会卡14598ms
     const dfs = () => {
+      if (nDfsCall > nMaxCall) return false;
       nDfsCall++;
       // 检查是否已经全分类好了
       if (this.isSorted) return true;
@@ -195,7 +196,7 @@ class WaterTubes {
 
           // 试走这一步，如果最后走不通就undo（回溯）
           this.move(from, to);
-          if (nDfsCall < nMaxCall && dfs()) {
+          if (dfs()) {
             return true;
           } else {
             this.undo();
@@ -208,16 +209,16 @@ class WaterTubes {
 
     if (dfs()) {
       console.log(nDfsCall);
-      this.solveSteps = JSON.parse(JSON.stringify(this.history));;
-      return true;
+      this.solveSteps = JSON.parse(JSON.stringify(this.history));
+      return "";
     } else if (nDfsCall < nMaxCall) {
       console.log(nDfsCall);
       console.log("无解");
-      return false;
+      return "无解";
     } else {
       console.log(nDfsCall);
       console.log("超时");
-      return false;
+      return "超时";
     }
   }
 }

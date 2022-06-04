@@ -15,7 +15,10 @@ const myapp = createApp({
     
     const reset = () => {
       const config = configs[currConfigIdx.value]
-      waterTubes = new WaterTubes(config, nTubes.value);
+      waterTubes = new WaterTubes(config, nTubes.value, (config)=>{
+        configs[currConfigIdx.value] = config;
+        localStorage.setItem('sortPuz: configs', JSON.stringify(configs));
+      });
       state.value = waterTubes.data;
       nLayers.value = waterTubes.nLayers;
     }
@@ -64,35 +67,18 @@ const myapp = createApp({
     const getHistoryLength = () => {
       return waterTubes.history.length;
     }
+    const getCanRedo = () => {
+      return waterTubes.canRedo();
+    }
     const getColor = (arr, i) => {
       return COLORS_MAP[COLORS[arr[i]]] || arr[i] || 'transperant'
-    }
-
-    const getRandomNum = (min, max) => {
-      return Math.random() * (max - min);
     }
 
     const getRandomConfig = () => {
       console.log('getRandomConfig');
 
-      let n = configs[currConfigIdx.value].length;
-      const dn = n < COLORS.length ? 1 : 0;
-      n += dn;
-
-      const config = new Array(n).fill(1).map((x, i)=>{
-        const result = [];
-        for (let j=0; j<nLayers.value; j++) {
-          result.push(i); 
-        }
-        return result;
-      });
-      for (let i=0; i<n; i++) {
-        for (let j=0; j<nLayers.value; j++) {
-          const x = Math.round(getRandomNum(0, n-1));
-          const y = Math.round(getRandomNum(0, nLayers.value-1));
-          [config[i][j], config[x][y]] = [config[x][y], config[i][j]];
-        }
-      }
+      const n = configs[currConfigIdx.value].length;
+      const config = waterTubes.genConfig(n);
       configs.push(config);
       configsLen.value = configs.length;
       localStorage.setItem('sortPuz: configs', JSON.stringify(configs));
@@ -212,6 +198,17 @@ const myapp = createApp({
       localStorage.setItem('sortPuz: currConfigIdx', currConfigIdx.value);
     })
 
+    watch(nTubes, () => {
+      clearTimeout(timer);
+      reset();
+      // 稍微能保留data目前做的，但是有bug，不如直接reset
+      // const configLen = configs[currConfigIdx.value].length;
+      // waterTubes = new WaterTubes(waterTubes.data.slice(0, configLen), nTubes.value);
+      // state.value = waterTubes.data;
+      // nLayers.value = waterTubes.nLayers;
+      localStorage.setItem('sortPuz: currConfigIdx', currConfigIdx.value);   
+    })
+
     return {
       state,
       nTubes,
@@ -222,6 +219,7 @@ const myapp = createApp({
       msg,
       getHistoryText,
       getHistoryLength,
+      getCanRedo,
       getColor,
       handleClickTube,
       handleClickResetBtn,

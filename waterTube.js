@@ -1,20 +1,48 @@
+
+const getRandomNum = (min, max) => {
+  return Math.random() * (max - min);
+}
+
 class WaterTubes {
-  constructor(config, nEmpty) {
+  constructor(config, nEmpty, callback) {
+    this.config = config;
+    this.nEmpty = nEmpty;
+    this.init();
+    this.solveSteps = null;
+    this.checkConfig();
+    if (callback) {
+      callback(this.config);
+    }
+  }
+  
+  init() {
     this.data = [];
     this.nLayers = 4;
     this.history = [];
     this._historyData = [];
     this._redoHistory = [];
-    this.updateData(config, nEmpty);
-    this.initial = JSON.parse(JSON.stringify(this.data));
-    this.solveSteps = null;
+    this.updateData();
   }
-
-  updateData(config, nEmpty) {
+  
+  updateData(config=this.config, nEmpty=this.nEmpty) {
     this.data = JSON.parse(JSON.stringify(config));
     this.nLayers = config[0].length;
     for (let i = 0; i < nEmpty; i++) {
       this.data[config.length + i] = [];
+    }
+  }
+  
+  // 检查有无解，若无解，重新生成config
+  checkConfig() {
+    const _msg = this.solve();
+    if (_msg) {
+      console.log(_msg);
+      this.solveSteps = null;
+      this.config = this.genConfig(this.config.length);
+      this.init();
+      this.checkConfig()
+    } else {
+      this.init();
     }
   }
 
@@ -24,7 +52,6 @@ class WaterTubes {
     this.history = history;
     this._historyData = [];
     this._redoHistory = [];
-    this.initial = JSON.parse(JSON.stringify(this.data));
   }
 
   getFirst(row) {
@@ -83,6 +110,12 @@ class WaterTubes {
     }
   }
 
+  reset() {
+    while (this.history.length) {
+      this.undo();
+    }
+  }
+
   redo() {
     if (!this._redoHistory.length) return;
     const { from, to, count } = this._redoHistory.pop();
@@ -93,10 +126,8 @@ class WaterTubes {
     this.history.push({ from, to, count, color });
   }
 
-  reset() {
-    while (this.history.length) {
-      this.undo();
-    }
+  canRedo() {
+    return !!this._redoHistory.length;
   }
 
   get isSorted() {
@@ -220,5 +251,29 @@ class WaterTubes {
       console.log("超时");
       return "超时";
     }
+  }
+
+  genConfig (configLen) {
+    console.log('genConfig', configLen);
+
+    let n = configLen;
+    const dn = n < COLORS.length ? 1 : 0;
+    n += dn;
+
+    const config = new Array(n).fill(1).map((x, i)=>{
+      const result = [];
+      for (let j=0; j<this.nLayers; j++) {
+        result.push(i); 
+      }
+      return result;
+    });
+    for (let i=0; i<n; i++) {
+      for (let j=0; j<this.nLayers; j++) {
+        const x = Math.round(getRandomNum(0, n-1));
+        const y = Math.round(getRandomNum(0, this.nLayers-1));
+        [config[i][j], config[x][y]] = [config[x][y], config[i][j]];
+      }
+    }
+    return config;
   }
 }

@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SortPuz: Water Color Sort Puzzle Game</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
-    <link rel="alternate stylesheet" href="bootstrap.min.css">
     <style>
       .toast {
         text-align: center;
@@ -65,7 +64,7 @@
           <h2 class="m-0">第{{ currConfigIdx + 1 }}关</h2>
           <button class="btn btn-outline-secondary" style="margin-left: 10px" @click="handleClickLastBtn" :disabled="!currConfigIdx">上一关</button>
           <button class="btn btn-outline-secondary" @click="handleClickNextBtn">下一关</button>
-          <button class="btn btn-outline-secondary" @click="handleClickResetBtn">reset</button>
+          <button class="btn btn-outline-danger" @click="handleClickResetBtn">重玩本关</button>
         </div>
         <div class="tube-wrap">
           <div v-for="(arr, idx) in state" style="margin-bottom: 20px">
@@ -83,16 +82,16 @@
             <div>{{idx}}</div>
           </div>
         </div>
-        <div class="hstack gap-2">
-          <button class="btn btn-outline-secondary" @click="handleClickUndoBtn">撤销</button>
-          <button class="btn btn-outline-secondary" @click="handleClickRedoBtn">重做</button>
+        <div class="hstack gap-2 mb-2">
+          <button class="btn btn-outline-secondary" @click="handleClickUndoBtn" :disabled="getHistoryLength()<=0">撤销</button>
+          <button class="btn btn-outline-secondary" @click="handleClickRedoBtn" :disabled="!getCanRedo()">重做</button>
           <button class="btn btn-outline-secondary" @click="handleClickSolveBtn">解答</button>
           <button class="btn btn-outline-secondary" @click="handleClickPlayBtn">播放解答动画</button>
         </div>
-        <div class="mt-2 mb-2 hstack gap-2">
+        <!-- <div class="mb-2 hstack gap-2">
           <button class="btn btn-outline-secondary" @click="nTubes--" :disabled="nTubes <= 0">减少空杯子</button>
           <button class="btn btn-outline-secondary" @click="nTubes++">增加空杯子</button>
-        </div>
+        </div> -->
         <div>
           <div>步数：{{ getHistoryLength() }}</div>
           <div>历史步骤：</div>

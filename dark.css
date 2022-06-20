@@ -1,0 +1,30 @@
+.dark {
+  --bs-body-bg: #222;
+  color: #fff;
+  --color-light-fff: #222;
+  --color-light-black: #333;
+  --color-light-black-trans: rgba(255,255,255,0.7);
+}
+
+.dark .btn-outline-secondary {
+  --bs-btn-border-color: #eee;
+  --bs-btn-color: #eee;
+  --bs-btn-hover-bg: #eee;
+  --bs-btn-hover-color: #333;
+}
+
+/* @media (prefers-color-scheme: dark) {
+  body {
+    --bs-body-bg: #222;
+    color: #fff;
+    --color-light-fff: #222;
+    --color-light-black: #eee;
+    --color-light-black-trans: rgba(255,255,255,0.7);
+  }
+  .btn-outline-secondary {
+    --bs-btn-border-color: #eee;
+    --bs-btn-color: #eee;
+    --bs-btn-hover-bg: #eee;
+    --bs-btn-hover-color: #333;
+  }
+} */
